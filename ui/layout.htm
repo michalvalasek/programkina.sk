@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<title>ProgramKina.sk</title>
+	<style type="text/css">
+		{{ Web::minify('ui/',array('style.css'),FALSE) }}
+	</style>
+</head>
+<body>
+	<div class="header">
+		<h4>Keď neviete, čo dávajú</h4>
+		<h1>ProgramKina.sk</h1>
+	</div>
+	<div class="content">
+		<F3:include href="{{ @content }}" />
+	</div>
+	<div class="footer">
+		<h5>Copyright &copy; 2011 Michal Valášek</h5>
+	</div>
+</body>
+</html>

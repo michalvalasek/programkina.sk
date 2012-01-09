@@ -1,0 +1,10 @@
+<ul data-role="listview" data-inset="true" data-filter="true">
+<repeat group="{{@items}}" value="{{ @item }}" counter="{{ @counter }}">
+	<li data-role="list-divider">12.3.2011</li>
+	<li>
+		<a href="item/{{ @counter }}" title="Detaily predstavenia">
+			<h3>{{ @item.title }}</h3>
+		</a>
+	</li>
+</repeat>
+</ul>
