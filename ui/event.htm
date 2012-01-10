@@ -1,0 +1,13 @@
+<div class="ui-body ui-body-c">
+	<h2>{{ @event.title }}</h2>
+	<p>{{ nl2br(@event.description) }}</p>
+	<p>Typ predstavenia: {{ @event.type }}</p>
+	<p>{{ nl2br(@event.info) }}</p>
+	
+	<ul data-role="listview" data-inset="true" data-dividertheme="b">
+		<li data-role="list-divider">Premietania</li>
+		<F3:repeat group="{{@dates}}" value="{{@date}}">
+		<li>{{ date('d.m.Y - H:i', @date.timestamp) }}</li>
+		</F3:repeat>
+	</ul>
+</div>

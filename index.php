@@ -6,39 +6,31 @@ F3::set('CACHE',FALSE);
 F3::set('DEBUG',3);
 F3::set('UI','ui/');
 
-$movies = array(
-	1 => array(
-		'title' => "Solaris",
-		'description' => "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-		tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-		quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-		consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-		cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-		proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-	),
-	2 => array(
-		'title' => "Moon",
-		'description' => "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-		tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-		quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-		consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-		cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-		proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-	),
-	3 => array(
-		'title' => "Sunshine",
-		'description' => "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-		tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-		quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-		consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-		cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-		proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-	),
+// Database connector
+F3::set('DB',
+	new DB(
+		'mysql:host=localhost;port=3306;dbname=programkina',
+		'root',
+		''
+	)
 );
 
+F3::set('WEEKDAYS', array(
+	1 => 'Pondelok',
+	2 => 'Utorok',
+	3 => 'Streda',
+	4 => 'Štvrtok',
+	5 => 'Piatok',
+	6 => 'Sobota',
+	7 => 'Nedeľa',
+));
+
+// List of all upcomming events grouped by dates
 F3::route('GET /',
-	function() use(&$movies) {
-		F3::set('items',$movies);
+	function() {
+		$now = time();
+		$events = DB::sql("SELECT * FROM dates JOIN events ON events.id=dates.event_id WHERE timestamp>{$now} GROUP BY event_id, date ORDER BY timestamp ASC");
+		F3::set('events',$events);
 		
 		F3::set('page','jqm_page.htm');
 		F3::set('content','home.htm');
@@ -46,15 +38,35 @@ F3::route('GET /',
 	}
 );
 
-F3::route('GET /item/@id',
-	function() use(&$movies) {
-		$id = F3::get('PARAMS["id"]');
-		F3::set('item',$movies[$id]);
+// Details of an event
+F3::route('GET /event/@id',
+	function() {
+		$id = (int) F3::get('PARAMS["id"]');
+		$events = DB::sql("SELECT * FROM events WHERE id={$id}");
+		if (empty($events)) {
+			//F3::reroute('/unknown_event'); // unnecessary HTTP redirect
+			F3::set('content','unknown_event.htm'); // better to render the error page directly
+		} else {
+			F3::set('event',$events[0]);
+			
+			$dates = DB::sql("SELECT * FROM dates WHERE event_id={$id}");
+			F3::set('dates',$dates);
+			
+			F3::set('content','event.htm');
+		}
 		
-		F3::set('content','item.htm');
 		echo Template::serve('jqm_page.htm');
 	}
 );
+
+/*
+F3::route('GET /unknown_event',
+	function() {
+		F3::set('content','unknown_event.htm');
+		echo Template::serve('jqm_page.htm');
+	}
+);
+*/
 
 F3::run();
 

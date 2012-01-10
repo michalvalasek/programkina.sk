@@ -1,10 +1,14 @@
 <ul data-role="listview" data-inset="true" data-filter="true">
-<repeat group="{{@items}}" value="{{ @item }}" counter="{{ @counter }}">
-	<li data-role="list-divider">12.3.2011</li>
+<F3:repeat group="{{@events}}" value="{{ @event }}" counter="{{ @counter }}">
+	<F3:check if="{{ @current_date=='' || @event.date > @current_date }}">
+	{{ F3::set('current_date', @event.date) }}
+	{{ F3::set('wday_no', date('N',@event.timestamp)) }}
+	<li data-role="list-divider">{{ date('d.m.Y', @event.timestamp) }} - {{ @WEEKDAYS[@wday_no] }}</li>
+	</F3:check>
 	<li>
-		<a href="item/{{ @counter }}" title="Detaily predstavenia">
-			<h3>{{ @item.title }}</h3>
+		<a href="event/{{ @counter }}" title="Detaily predstavenia">
+			<h3>{{ @event.title }}</h3>
 		</a>
 	</li>
-</repeat>
+</F3:repeat>
 </ul>
